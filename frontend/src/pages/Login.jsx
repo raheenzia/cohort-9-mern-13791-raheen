@@ -2,17 +2,17 @@ import { Heart, Mail, Lock } from "lucide-react";
 
 function Login() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-sky-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-100 to-pink-200 flex items-center justify-center p-6">
 
-      <div className="w-full max-w-6xl min-h-[670px] bg-white rounded-[42px] overflow-hidden shadow-xl flex">
+      <div className="w-full max-w-6xl min-h-[670px] bg-white rounded-[42px] overflow-hidden shadow-xl flex flex-col md:flex-row">
 
         {/* leftt */}
-        <div className="w-1/2 bg-pastel-pink p-14 flex flex-col">
+        <div className="w-full md:w-1/2 bg-pastel-pink p-8 md:p-14 flex flex-col">
 
           <div className="flex items-center gap-3 text-pastel-text">
             <Heart size={30} />
             <span className="text-2xl font-display font-bold">
-              Pastel Notes
+              Petal Notes
             </span>
           </div>
 
@@ -24,13 +24,11 @@ function Login() {
             </h1>
 
             <p className="mt-8 text-xl leading-relaxed text-pastel-muted">
-              Write soft little notes, colour-code your days,
-              and keep everything in one calm, cotton-candy
-              corner of the internet.
+              Write little notes and keep everything in one little corner of the internet.
             </p>
           </div>
 
-          <div className="mt-auto flex gap-5">
+          <div className="mt-4 md:mt-auto flex gap-5">
             <div className="w-14 h-14 rounded-full bg-pastel-blue" />
             <div className="w-14 h-14 rounded-full bg-pastel-green" />
             <div className="w-14 h-14 rounded-full bg-pastel-yellow" />
@@ -41,7 +39,7 @@ function Login() {
 
 
         {/* right*/}
-        <div className="w-1/2 p-14 flex flex-col justify-center">
+        <div className="w-full md:w-1/2 mt-8 md:mt-0 p-8 md:p-14 flex flex-col justify-center">
 
           <div className="flex bg-pink-50 rounded-full p-1 mb-12">
             <button className="w-1/2 py-3 rounded-full bg-white text-pastel-text font-display font-semibold shadow-sm">
@@ -56,7 +54,7 @@ function Login() {
 
           <div className="mb-10">
             <h2 className="font-display text-4xl font-bold text-pastel-text">
-              Welcome back, lovely
+              Welcome back..
             </h2>
 
             <p className="mt-3 text-lg text-pastel-muted">
@@ -66,19 +64,20 @@ function Login() {
 
 
           <div className="mb-6">
-            <label className="block mb-3 text-sm font-semibold tracking-wide text-pastel-muted">
+            <label htmlFor="email" className="block mb-3 text-sm font-semibold tracking-wide text-pastel-muted">
               EMAIL
             </label>
 
-            <div className="flex items-center border border-pink-200 rounded-full overflow-hidden">
+            <div className="flex items-center border border-pink-200 bg-pink-50 rounded-full overflow-hidden">
               <div className="px-5">
                 <Mail size={22} className="text-pastel-muted" />
               </div>
 
               <input
+                id="email"
                 type="email"
                 placeholder="Email address"
-                className="w-full bg-pastel-lavender px-4 py-4 outline-none text-pastel-text"
+                className="w-full px-4 py-4 outline-none focus-visible:ring-2 focus-visible:ring-pastel-button text-pastel-text"
               />
             </div>
           </div>
@@ -89,15 +88,16 @@ function Login() {
               PASSWORD
             </label>
 
-            <div className="flex items-center border border-pink-200 rounded-full overflow-hidden">
+            <div htmlFor="password" className="flex items-center border border-pink-200 bg-pink-50 rounded-full overflow-hidden">
               <div className="px-5">
                 <Lock size={22} className="text-pastel-muted" />
               </div>
 
               <input
+                id="password"
                 type="password"
                 placeholder="Password"
-                className="w-full bg-pastel-lavender px-4 py-4 outline-none text-pastel-text"
+                className="w-full px-4 py-4 outline-none focus-visible:ring-2 focus-visible:ring-pastel-button text-pastel-text"
               />
             </div>
           </div>
