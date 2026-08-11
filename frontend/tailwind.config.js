@@ -12,7 +12,7 @@ module.exports = {
           button: "#EF8FB1",
           text: "#4D2944",
           muted: "#8F7189",
-          lavender: "#EAF0FC",
+          lavender: "#F6EFFB",
           blue: "#A9DDF3",
           green: "#BDEED8",
           yellow: "#F8E9A9",
