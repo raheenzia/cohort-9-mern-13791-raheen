@@ -1,4 +1,4 @@
-import { registerUserService } from "../services/auth.service.js";
+import { registerUserService,loginUserService } from "../services/auth.service.js";
 
 
 export const registerUser = async (req, res) => {
@@ -23,4 +23,24 @@ export const registerUser = async (req, res) => {
             message: error.message,
         });
     }
+};
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    const result = await loginUserService(email, password);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      message: error.message || "Something went wrong",
+    });
+  }
 };
