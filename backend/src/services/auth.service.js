@@ -18,7 +18,18 @@ export const registerUserService = async ({ name, email, password }) => {
         email,
         password: hashedPassword,
     });
-    await user.save();
+    
+    try {
+        await user.save();
+    } catch (error) {
+        if (error.code === 11000) {
+            const duplicateError = new Error("Email already registered");
+            duplicateError.statusCode = 400;
+            throw duplicateError;
+        }
+
+        throw error;
+    }
 
     const token = jwt.sign(
         {userId: user._id},
