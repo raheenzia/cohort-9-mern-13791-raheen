@@ -1,5 +1,4 @@
-import { registerUserService,loginUserService } from "../services/auth.service.js";
-
+import { registerUserService, loginUserService, getCurrentUserService } from "../services/auth.service.js";
 
 export const registerUser = async (req, res) => {
     try {
@@ -26,21 +25,35 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required",
-      });
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "Email and password are required",
+            });
+        }
+
+        const result = await loginUserService(email, password);
+
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            message: error.message || "Something went wrong",
+        });
     }
+};
 
-    const result = await loginUserService(email, password);
+export const getCurrentUser = async (req, res) => {
+    try {
+        const user = await getCurrentUserService(req.user.userId);
 
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      message: error.message || "Something went wrong",
-    });
-  }
+        return res.status(200).json({
+            user,
+        });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            message: error.message || "Something went wrong",
+        });
+    }
 };

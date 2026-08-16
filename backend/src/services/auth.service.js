@@ -18,7 +18,7 @@ export const registerUserService = async ({ name, email, password }) => {
         email,
         password: hashedPassword,
     });
-    
+
     try {
         await user.save();
     } catch (error) {
@@ -32,12 +32,12 @@ export const registerUserService = async ({ name, email, password }) => {
     }
 
     const token = jwt.sign(
-        {userId: user._id},
+        { userId: user._id },
         process.env.JWT_SECRET,
-        {expiresIn: "8d"}
+        { expiresIn: "8d" }
     );
 
-    return{
+    return {
         message: "User registered successfully",
         token,
         user: {
@@ -49,35 +49,51 @@ export const registerUserService = async ({ name, email, password }) => {
 };
 
 export const loginUserService = async (email, password) => {
-  const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select("+password");
 
-  if (!user) {
-    const error = new Error("Invalid email or password");
-    error.statusCode = 401;
-    throw error;
-  }
+    if (!user) {
+        const error = new Error("Invalid email or password");
+        error.statusCode = 401;
+        throw error;
+    }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-  if (!isPasswordValid) {
-    const error = new Error("Invalid email or password");
-    error.statusCode = 401;
-    throw error;
-  }
+    if (!isPasswordValid) {
+        const error = new Error("Invalid email or password");
+        error.statusCode = 401;
+        throw error;
+    }
 
-  const token = jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+    const token = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+    );
 
-  return {
-    message: "Login successful",
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-    },
-  };
+    return {
+        message: "Login successful",
+        token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+        },
+    };
+};
+
+export const getCurrentUserService = async (userId) => {
+    const user = await User.findById(userId);
+
+    if (!user) {
+        const error = new Error("User not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+    };
 };
