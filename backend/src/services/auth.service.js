@@ -1,97 +1,99 @@
-import mongoose from "mongoose";
-import Note from "../models/note.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/user.model.js";
 
-export const createNoteService = async (userId, title, content, color) => {
-    const newNote = new Note({
-        title,
-        content,
-        color,
-        user: userId,
-    });
+export const registerUserService = async ({ name, email, password }) => {
 
-    await newNote.save();
-
-    return newNote;
-};
-
-export const getNotesService = async (userId) => {
-    const notes = await Note.find({
-        user: userId,
-    }).sort({ createdAt: -1 });
-
-    return notes;
-};
-
-export const getNoteByIdService = async (userId, noteId) => {
-    if (!mongoose.Types.ObjectId.isValid(noteId)) {
-        const error = new Error("Invalid note ID");
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        const error = new Error("User with this email already exists");
         error.statusCode = 400;
         throw error;
     }
 
-    const note = await Note.findOne({
-        _id: noteId,
-        user: userId,
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+        name,
+        email,
+        password: hashedPassword,
     });
 
-    if (!note) {
-        const error = new Error("Note not found");
-        error.statusCode = 404;
+    try {
+        await user.save();
+    } catch (error) {
+        if (error.code === 11000) {
+            const duplicateError = new Error("Email already registered");
+            duplicateError.statusCode = 400;
+            throw duplicateError;
+        }
+
         throw error;
     }
 
-    return note;
+    const token = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "8d" }
+    );
+
+    return {
+        message: "User registered successfully",
+        token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email
+        }
+    };
 };
 
-export const updateNoteService = async (userId, noteId, title,ncontent, color ) => {
-    if (!mongoose.Types.ObjectId.isValid(noteId)) {
-        const error = new Error("Invalid note ID");
-        error.statusCode = 400;
+export const loginUserService = async (email, password) => {
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+        const error = new Error("Invalid email or password");
+        error.statusCode = 401;
         throw error;
     }
 
-    const note = await Note.findOne({
-        _id: noteId,
-        user: userId,
-    });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (!note) {
-        const error = new Error("Note not found");
-        error.statusCode = 404;
+    if (!isPasswordValid) {
+        const error = new Error("Invalid email or password");
+        error.statusCode = 401;
         throw error;
     }
 
-    note.title = title;
-    note.content = content;
+    const token = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+    );
 
-    if (color !== undefined) {
-        note.color = color;
-    }
-
-    await note.save();
-
-    return note;
+    return {
+        message: "Login successful",
+        token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+        },
+    };
 };
 
-export const deleteNoteService = async (userId, noteId) => {
-    if (!mongoose.Types.ObjectId.isValid(noteId)) {
-        const error = new Error("Invalid note ID");
-        error.statusCode = 400;
-        throw error;
-    }
+export const getCurrentUserService = async (userId) => {
+    const user = await User.findById(userId);
 
-    const note = await Note.findOne({
-        _id: noteId,
-        user: userId,
-    });
-
-    if (!note) {
-        const error = new Error("Note not found");
+    if (!user) {
+        const error = new Error("User not found");
         error.statusCode = 404;
         throw error;
     }
 
-    await note.deleteOne();
-
-    return note;
+    return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+    };
 };
