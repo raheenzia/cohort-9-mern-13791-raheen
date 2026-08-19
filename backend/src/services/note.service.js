@@ -2,24 +2,43 @@ import mongoose from "mongoose";
 import Note from "../models/note.model.js";
 
 export const createNoteService = async (userId, title, content, color) => {
-    const newNote = new Note({
-        title,
-        content,
-        color,
-        user: userId,
-    });
+    try{
+        const newNote = new Note({
+            title,
+            content,
+            color,
+            user: userId,
+        });
 
-    await newNote.save();
+            await newNote.save();
 
-    return newNote;
+            return newNote;
+    } catch (error) {
+        if (error.statusCode) {
+            throw error;
+        }
+
+        const servError = new Error("Failed to create note");
+        servError.statusCode = 500;
+        throw servError;
+    }
 };
 
 export const getNotesService = async (userId) => {
-    const notes = await Note.find({
-        user: userId,
-    }).sort({ createdAt: -1 });
+    try{
+        const notes = await Note.find({
+            user: userId,
+        }).sort({ createdAt: -1 });
 
-    return notes;
+        return notes;
+    } catch (error) {
+        if (error.statusCode) {
+            throw error;
+        }
+        const servError = new Error("Failed to get notes");
+        servError.statusCode = 500;
+        throw servError;
+    }
 };
 
 export const getNoteByIdService = async (userId, noteId) => {
@@ -29,18 +48,29 @@ export const getNoteByIdService = async (userId, noteId) => {
         throw error;
     }
 
-    const note = await Note.findOne({
-        _id: noteId,
-        user: userId,
-    });
+    try {
+        const note = await Note.findOne({
+            _id: noteId,
+            user: userId,
+        });
 
-    if (!note) {
-        const error = new Error("Note not found");
-        error.statusCode = 404;
-        throw error;
+        if (!note) {
+            const error = new Error("Note not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return note;
+    } catch (error) {
+        if (error.statusCode) {
+            throw error;
+        }
+
+        const servError = new Error("Failed to get note");
+        servError.statusCode = 500;
+        throw servError;
+        
     }
-
-    return note;
 };
 
 export const updateNoteService = async (userId,noteId,title,content,color) => {
@@ -50,27 +80,37 @@ export const updateNoteService = async (userId,noteId,title,content,color) => {
         throw error;
     }
 
-    const note = await Note.findOne({
-        _id: noteId,
-        user: userId,
-    });
+    try {
+        const note = await Note.findOne({
+            _id: noteId,
+            user: userId,
+        });
 
-    if (!note) {
-        const error = new Error("Note not found");
-        error.statusCode = 404;
-        throw error;
+        if (!note) {
+            const error = new Error("Note not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        note.title = title;
+        note.content = content;
+
+        if (color !== undefined) {
+            note.color = color;
+        }
+
+        await note.save();
+
+        return note;
+    } catch (error) {
+        if (error.statusCode) {
+            throw error;
+        }
+
+        const servError = new Error("Failed to update note");
+        servError.statusCode = 500;
+        throw servError;
     }
-
-    note.title = title;
-    note.content = content;
-
-    if (color !== undefined) {
-        note.color = color;
-    }
-
-    await note.save();
-
-    return note;
 };
 
 export const deleteNoteService = async (userId, noteId) => {
@@ -80,18 +120,28 @@ export const deleteNoteService = async (userId, noteId) => {
         throw error;
     }
 
-    const note = await Note.findOne({
-        _id: noteId,
-        user: userId,
-    });
+    try {
+        const note = await Note.findOne({
+            _id: noteId,
+            user: userId,
+        });
 
-    if (!note) {
-        const error = new Error("Note not found");
-        error.statusCode = 404;
-        throw error;
+        if (!note) {
+            const error = new Error("Note not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        await note.deleteOne();
+
+        return note;
+    } catch (error) {
+        if (error.statusCode) {
+            throw error;
+        }
+        
+        const servError = new Error("Failed to delete note");
+        servError.statusCode = 500;
+        throw servError;
     }
-
-    await note.deleteOne();
-
-    return note;
 };
