@@ -1,32 +1,41 @@
+import {useState,useEffect} from "react";
 import { Plus } from "lucide-react";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
 
-const notes = [
-    {
-        id: 1,
-        title: "Welcome to Pastel Notes",
-        content: "This is where your notes will appear.",
-        date: "Aug 22, 2026",
-        color: "pink",
-    },
-    {
-        id: 2,
-        title: "Things to remember",
-        content: "Add your important thoughts and ideas here.",
-        date: "Aug 21, 2026",
-        color: "blue",
-    },
-    {
-        id: 3,
-        title: "Study notes",
-        content: "Keep your university notes organized in one place.",
-        date: "Aug 20, 2026",
-        color: "purple",
-    },
-];
+const API_URL = process.env.REACT_APP_API_URL;
 
-function Dashboard() {
+function Dashboard(){
+    const [notes, setNotes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchNotes = async () => {
+            try{
+                const token = localStorage.getItem("token");
+                const response = await fetch(`${API_URL}/api/notes`, {
+                    headers:{
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+
+                const data = await response.json();
+                if(!response.ok){
+                    throw new Error(data.message || "Failed to fetch notes");
+                }
+                setNotes(data.notes);
+            }
+            catch(error){
+                setError(error.message);
+            }finally{
+                setLoading(false);
+            }
+        };
+
+        fetchNotes();
+    },[]);
+
     return (
         <div className="min-h-screen bg-pastel-pink/30 text-pastel-text">
             <Navbar />
