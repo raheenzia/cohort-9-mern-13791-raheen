@@ -29,6 +29,7 @@ function Dashboard(){
             setNotes(data.notes.sort(
                 (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
             ));
+            setError("");
         }
         catch(error){
             setError(error.message);
@@ -64,13 +65,14 @@ function Dashboard(){
             if(!response.ok){
                 throw new Error(data.message || "Failed to save note");
             }
-            
+
             setShowEditor(false);
             setEditingNote(null);
 
             await fetchNotes();
         } catch (error) {
             console.error("Failed to save note:", error);
+            throw error;
         }
     };
 
