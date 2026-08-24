@@ -37,6 +37,7 @@ function NoteEditor({ note, onSave, onCancel }) {
     const [title, setTitle] = useState(note?.title || "");
     const [color, setColor] = useState(note?.color || "pink");
     const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState("");
 
     useEffect(() => {
         if (editorRef.current) {
@@ -51,7 +52,7 @@ function NoteEditor({ note, onSave, onCancel }) {
 
     const handleSave = async () => {
         setSaving(true);
-
+        setSaveError("");
         try {
             const content = sanitizeHtml(editorRef.current?.innerHTML || "");
 
@@ -61,6 +62,8 @@ function NoteEditor({ note, onSave, onCancel }) {
                 content: content || "<p></p>",
                 color,
             });
+        } catch (error) {
+            setSaveError(error.message);
         } finally {
             setSaving(false);
         }
@@ -79,6 +82,7 @@ function NoteEditor({ note, onSave, onCancel }) {
 
                     <button
                         onClick={onCancel}
+                        aria-label="Close note editor"
                         className="rounded-full bg-white/60 p-1.5 transition hover:bg-white"
                     >
                         <X size={18} />
@@ -135,6 +139,14 @@ function NoteEditor({ note, onSave, onCancel }) {
                 </div>
 
                 <div className="flex justify-end gap-2 border-t border-pastel-pink px-6 py-4">
+                    {saveError && (
+                        <p
+                            role="alert"
+                            className="mr-auto self-center text-sm text-red-500"
+                        >
+                            {saveError}
+                        </p>
+                    )}
                     <button
                         onClick={onCancel}
                         className="rounded-2xl border border-pastel-pink px-4 py-2.5 text-sm font-semibold text-pastel-muted transition hover:text-pastel-text"

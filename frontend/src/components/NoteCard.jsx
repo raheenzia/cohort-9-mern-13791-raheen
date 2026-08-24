@@ -19,7 +19,7 @@ function NoteCard({ note, onEdit, onDelete }) {
                 {note.title}
             </h2>
 
-            <p className="mt-2 flex-1 text-sm text-pastel-text/80 line-clamp-3 overflow-hidden"
+            <div className="mt-2 flex-1 text-sm text-pastel-text/80 line-clamp-3 overflow-hidden"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(note.content) }}
             />
 

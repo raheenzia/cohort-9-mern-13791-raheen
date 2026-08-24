@@ -1,5 +1,5 @@
 import {useState,useEffect} from "react";
-import { Plus } from "lucide-react";
+import { Plus,X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
 import NoteEditor from "../modals/NoteEditor";
@@ -10,6 +10,7 @@ function Dashboard(){
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [deleteError, setDeleteError] = useState("");
     const [editingNote, setEditingNote] = useState(null);
     const [showEditor, setShowEditor] = useState(false);
 
@@ -61,7 +62,7 @@ function Dashboard(){
                     color: noteData.color,
                 }),
             });
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));;
             if(!response.ok){
                 throw new Error(data.message || "Failed to save note");
             }
@@ -78,6 +79,7 @@ function Dashboard(){
 
     const handleDelete = async(noteId) => {
         try {
+            setDeleteError("");
             const token = localStorage.getItem("token");
 
             const response = await fetch(
@@ -89,16 +91,15 @@ function Dashboard(){
                     },
                 }
             );
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));;
             if (!response.ok) {
                 throw new Error(data.message || "Failed to delete note");
             }
 
-            setNotes((currentNotes) =>
-                currentNotes.filter((note) => note._id !== noteId)
-            );
+            await fetchNotes();
         } catch (error) {
             console.error("Failed to delete note:", error);
+            setDeleteError(error.message);
         }
     }
 
@@ -167,6 +168,23 @@ function Dashboard(){
                     </div>
                 )}
             </main>
+            {deleteError && (
+                <div
+                    role="alert"
+                    className="fixed bottom-5 right-5 z-[100] flex max-w-sm items-center gap-4 rounded-2xl bg-red-100 px-4 py-3 text-sm text-red-600 shadow-lg"
+                >
+                    <span>{deleteError}</span>
+
+                    <button
+                        type="button"
+                        onClick={() => setDeleteError("")}
+                        aria-label="Dismiss delete error"
+                        className="shrink-0 rounded-lg p-1 transition hover:bg-red-200"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
             {showEditor && (
                 <NoteEditor
                     note={editingNote}
