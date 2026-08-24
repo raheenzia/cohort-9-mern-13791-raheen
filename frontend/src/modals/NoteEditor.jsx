@@ -56,7 +56,7 @@ function NoteEditor({ note, onSave, onCancel }) {
             await onSave({
                 _id: note?._id,
                 title: title.trim() || "Untitled note",
-                content: editorRef.current?.innerHTML || "",
+                content: editorRef.current?.innerHTML || "<p></p>",
                 color,
             });
         } finally {

@@ -26,7 +26,9 @@ function Dashboard(){
             if(!response.ok){
                 throw new Error(data.message || "Failed to fetch notes");
             }
-            setNotes(data.notes);
+            setNotes(data.notes.sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+            ));
         }
         catch(error){
             setError(error.message);
@@ -62,21 +64,13 @@ function Dashboard(){
             if(!response.ok){
                 throw new Error(data.message || "Failed to save note");
             }
-
-            if (isEditing) {
-                setNotes((currentNotes) =>
-                    currentNotes.map((note) =>
-                        note._id === data.note._id ? data.note : note
-                    )
-                );
-            } else {
-                setNotes((currentNotes) => [data.note, ...currentNotes]);
-            }
-
+            
             setShowEditor(false);
             setEditingNote(null);
+
+            await fetchNotes();
         } catch (error) {
-            setError(error.message);
+            console.error("Failed to save note:", error);
         }
     };
 
@@ -102,7 +96,7 @@ function Dashboard(){
                 currentNotes.filter((note) => note._id !== noteId)
             );
         } catch (error) {
-            setError(error.message);
+            console.error("Failed to delete note:", error);
         }
     }
 
