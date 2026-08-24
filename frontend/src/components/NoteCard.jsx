@@ -1,4 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
+import { sanitizeHtml } from "../utils/sanitizeHtml";
 
 function NoteCard({ note, onEdit, onDelete }) {
     const backgroundColors = {
@@ -19,7 +20,7 @@ function NoteCard({ note, onEdit, onDelete }) {
             </h2>
 
             <p className="mt-2 flex-1 text-sm text-pastel-text/80 line-clamp-3 overflow-hidden"
-                dangerouslySetInnerHTML={{ __html: note.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(note.content) }}
             />
 
             <div className="mt-4 flex items-center justify-between">

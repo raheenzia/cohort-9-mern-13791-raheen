@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {Bold, Italic, Underline,List,ListOrdered, Quote, Heading,X,Check} from "lucide-react";
-
+import { sanitizeHtml } from "../utils/sanitizeHtml";
 const colors = [
     { id: "pink", className: "bg-pastel-pink" },
     { id: "blue", className: "bg-pastel-blue" },
@@ -40,7 +40,7 @@ function NoteEditor({ note, onSave, onCancel }) {
 
     useEffect(() => {
         if (editorRef.current) {
-            editorRef.current.innerHTML = note?.content || "";
+            editorRef.current.innerHTML =  sanitizeHtml(note?.content || "");
         }
     }, [note]);
 
@@ -53,10 +53,12 @@ function NoteEditor({ note, onSave, onCancel }) {
         setSaving(true);
 
         try {
+            const content = sanitizeHtml(editorRef.current?.innerHTML || "");
+
             await onSave({
                 _id: note?._id,
                 title: title.trim() || "Untitled note",
-                content: editorRef.current?.innerHTML || "<p></p>",
+                content: content || "<p></p>",
                 color,
             });
         } finally {
