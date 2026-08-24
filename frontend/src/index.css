@@ -10,3 +10,35 @@
 body {
   margin: 0;
 }
+
+.note-body p {
+  margin-bottom: 0.5rem;
+}
+
+.note-body ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.note-body ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.note-body h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.note-body a {
+  text-decoration: underline;
+}
+
+.note-body blockquote {
+  border-left: 3px solid #EF8FB1;
+  padding-left: 0.75rem;
+  font-style: italic;
+}

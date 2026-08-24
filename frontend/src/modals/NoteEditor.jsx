@@ -128,7 +128,7 @@ function NoteEditor({ note, onSave, onCancel }) {
                         ref={editorRef}
                         contentEditable
                         suppressContentEditableWarning
-                        className="min-h-52 w-full rounded-2xl border border-pastel-pink bg-white px-4 py-3 text-sm leading-relaxed text-pastel-text outline-none focus:ring-2 focus:ring-pastel-button"
+                        className="note-body min-h-52 w-full rounded-2xl border border-pastel-pink bg-white px-4 py-3 text-sm leading-relaxed text-pastel-text outline-none focus:ring-2 focus:ring-pastel-button"
                     />
                 </div>
 
