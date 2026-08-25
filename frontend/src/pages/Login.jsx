@@ -1,39 +1,47 @@
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock , User} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 function Login() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [isRegistering, setIsRegistering] = useState(false);
 
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         setError("");
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/login`, {
+            const endpoint = isRegistering
+                ? "/api/auth/register"
+                : "/api/auth/login";
+
+            const body = isRegistering
+                ? { name, email, password }
+                : { email, password };
+                
+            const response = await fetch(`${API_URL}${endpoint}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
+                body: JSON.stringify(body),
             });
 
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(data.message || "Failed to login");
+                throw new Error(data.message || (isRegistering ? "Registration failed" : "Login failed"));
             }
 
             localStorage.setItem("token", data.token);
@@ -45,8 +53,14 @@ function Login() {
             setLoading(false);
         }
     };
+
+    const switchMode = (registering) => {
+        setIsRegistering(registering);
+        setError("");
+    };
+
   return (
-    <div className="min-h-screen bg-pink-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-pastel-pink/30 flex items-center justify-center p-6">
 
       <div className="w-full max-w-6xl min-h-[670px] bg-white rounded-3xl overflow-hidden shadow-xl flex flex-col md:flex-row">
 
@@ -85,11 +99,19 @@ function Login() {
         <div className="w-full md:w-1/2 mt-8 md:mt-0 p-8 md:p-14 flex flex-col justify-center">
 
           <div className="flex bg-pink-50 rounded-2xl p-1 mb-12">
-            <button className="w-1/2 py-3 rounded-2xl bg-white text-pastel-text font-display font-semibold shadow-sm">
+            <button 
+              type="button"
+              onClick={() => switchMode(false)}
+              className={`w-1/2 py-3 rounded-2xl font-display font-semibold transition ${!isRegistering ? "bg-white text-pastel-text shadow-sm" : "text-pastel-muted"}`}
+            >
               Log in
             </button>
 
-            <button className="w-1/2 py-3 text-pastel-muted font-display font-semibold">
+            <button 
+              type="button"
+              onClick={() => switchMode(true)}
+              className={`w-1/2 py-3 rounded-2xl font-display font-semibold transition ${isRegistering ? "bg-white text-pastel-text shadow-sm" : "text-pastel-muted"}`}
+            >
               Sign up
             </button>
           </div>
@@ -97,15 +119,43 @@ function Login() {
 
           <div className="mb-10">
             <h2 className="font-display text-4xl font-bold text-pastel-text">
-              Welcome back!
+              {isRegistering
+                ? "Create your account!"
+                :"Welcome back!"}
             </h2>
 
             <p className="mt-3 text-lg text-pastel-muted">
-              Log in to open your notes.
+              {isRegistering
+                ? "Sign up to get started."
+                : "Log in to open your notes."}
             </p>
           </div>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit}>
+            
+            {isRegistering && (
+              <div className="mb-6">
+                <label htmlFor="name" className="block mb-3 text-sm font-semibold tracking-wide text-pastel-muted">
+                  NAME
+                </label>
+
+                <div className="flex items-center border border-pink-200 bg-pink-50 rounded-2xl overflow-hidden">
+                  <div className="px-5">
+                      <User size={22} className="text-pastel-muted" />
+                  </div>
+
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full px-4 py-4 outline-none focus-visible:ring-2 focus-visible:ring-pastel-button text-pastel-text"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="mb-6">
               <label htmlFor="email" className="block mb-3 text-sm font-semibold tracking-wide text-pastel-muted">
                 EMAIL
@@ -161,7 +211,7 @@ function Login() {
                 disabled={loading}
                 className="w-full bg-pastel-button hover:brightness-95 transition py-4 rounded-2xl text-pastel-text font-display text-lg font-bold flex items-center justify-center gap-2 disabled:opacity-60"
             >
-                {loading ? "Logging in..." : "Log in"}
+                {loading ? isRegistering ? "Creating account..." : "Logging in..." : isRegistering ? "Create account" : "Log in"}
             </button>
           </form>
         </div>
