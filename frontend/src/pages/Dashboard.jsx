@@ -4,17 +4,20 @@ import { Plus,X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
 import NoteEditor from "../modals/NoteEditor";
+import Profile from "../modals/Profile";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 function Dashboard(){
     const navigate = useNavigate();
     const [notes, setNotes] = useState([]);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [deleteError, setDeleteError] = useState("");
     const [editingNote, setEditingNote] = useState(null);
     const [showEditor, setShowEditor] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
 
     const fetchNotes = async () => {
         try{
@@ -47,8 +50,32 @@ function Dashboard(){
         }
     };
 
+    
+    const fetchCurrentUser = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`${API_URL}/api/auth/me`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to fetch profile");
+            }
+
+            setUser(data.user);
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
     useEffect(() => {
         fetchNotes();
+        fetchCurrentUser();
     },[]);
 
     const handleSave = async(noteData)=> {
@@ -126,9 +153,14 @@ function Dashboard(){
         setEditingNote(null);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/");
+    };
+
     return (
         <div className="min-h-screen bg-pastel-pink/30 text-pastel-text">
-            <Navbar />
+            <Navbar onProfile={()=>setShowProfile(true)}/>
 
             <main className="mx-auto max-w-6xl px-4 py-8">
                 <div className="flex flex-wrap items-end justify-between gap-4">
@@ -198,6 +230,14 @@ function Dashboard(){
                     note={editingNote}
                     onSave={handleSave}
                     onCancel={handleCancel}
+                />
+            )}
+            {showProfile && (
+                <Profile
+                    user={user}
+                    noteCount={notes.length}
+                    onClose={() => setShowProfile(false)}
+                    onLogout={handleLogout}
                 />
             )}
         </div>
