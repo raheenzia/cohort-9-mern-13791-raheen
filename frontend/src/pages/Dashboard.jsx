@@ -1,4 +1,5 @@
 import {useState,useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus,X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
@@ -7,6 +8,7 @@ import NoteEditor from "../modals/NoteEditor";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function Dashboard(){
+    const navigate = useNavigate();
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -24,6 +26,12 @@ function Dashboard(){
             });
 
             const data = await response.json();
+
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/");
+                return;
+            }
             if(!response.ok){
                 throw new Error(data.message || "Failed to fetch notes");
             }
