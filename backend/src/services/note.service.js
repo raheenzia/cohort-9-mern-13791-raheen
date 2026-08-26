@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Note from "../models/note.model.js";
+import logger from "../config/logger.js";
 
 export const createNoteService = async (userId, title, content, color) => {
     try{
@@ -11,6 +12,10 @@ export const createNoteService = async (userId, title, content, color) => {
         });
 
             await newNote.save();
+            logger.info(
+                {userId,noteId: newNote._id,},
+                "Note created"
+            );
 
             return newNote;
     } catch (error) {
@@ -101,6 +106,11 @@ export const updateNoteService = async (userId,noteId,title,content,color) => {
 
         await note.save();
 
+        logger.info(
+            {userId,noteId: note._id,},
+            "Note updated"
+        );
+
         return note;
     } catch (error) {
         if (error.statusCode) {
@@ -133,6 +143,11 @@ export const deleteNoteService = async (userId, noteId) => {
         }
 
         await note.deleteOne();
+
+        logger.info(
+            {userId,noteId: note._id,},
+            "Note deleted"
+        );
 
         return note;
     } catch (error) {
