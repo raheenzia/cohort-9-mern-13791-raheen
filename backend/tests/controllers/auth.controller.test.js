@@ -12,21 +12,28 @@ describe("Auth Controllers", () => {
     let getCurrentUserService;
 
     beforeEach(async () => {
-        registerUserService = sinon.stub();
-        loginUserService = sinon.stub();
-        getCurrentUserService = sinon.stub();
+        try {
+            registerUserService = sinon.stub();
+            loginUserService = sinon.stub();
+            getCurrentUserService = sinon.stub();
 
-        ({
-            registerUser,
-            loginUser,
-            getCurrentUser,
-        } = await esmock("../../src/controllers/auth.controller.js", {
-            "../../src/services/auth.service.js": {
-                registerUserService,
-                loginUserService,
-                getCurrentUserService,
-            },
-        }));
+            ({
+                registerUser,
+                loginUser,
+                getCurrentUser,
+            } = await esmock("../../src/controllers/auth.controller.js", {
+                "../../src/services/auth.service.js": {
+                    registerUserService,
+                    loginUserService,
+                    getCurrentUserService,
+                },
+            }));
+        } catch (error) {
+            throw new Error(
+                `Failed to set up auth controller tests: ${error.message}`,
+                { cause: error }
+            );
+        }
     });
 
     function createResponse() {

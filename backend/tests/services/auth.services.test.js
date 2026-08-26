@@ -18,19 +18,26 @@ describe("Auth Services", () => {
 
     describe("registerUserService", () => {
         it("should register a new user successfully", async () => {
-            sinon.stub(User, "findOne").resolves(null);
-            sinon.stub(User.prototype, "save").resolves();
+            try {
+                sinon.stub(User, "findOne").resolves(null);
+                sinon.stub(User.prototype, "save").resolves();
 
-            const result = await registerUserService({
-                name: "John",
-                email: "john@example.com",
-                password: "password123",
-            });
+                const result = await registerUserService({
+                    name: "John",
+                    email: "john@example.com",
+                    password: "password123",
+                });
 
-            expect(result.message).to.equal("User registered successfully");
-            expect(result.user.name).to.equal("John");
-            expect(result.user.email).to.equal("john@example.com");
-            expect(result.token).to.be.a("string");
+                expect(result.message).to.equal("User registered successfully");
+                expect(result.user.name).to.equal("John");
+                expect(result.user.email).to.equal("john@example.com");
+                expect(result.token).to.be.a("string");
+            } catch (error) {
+                throw new Error(
+                    `Registration service test failed: ${error.message}`,
+                    { cause: error }
+                );
+            }
         });
 
         it("should reject registration when email already exists", async () => {
