@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./src/config/db.js";
+import logger from "./src/config/logger.js";
+import httpLogger from "./src/middleware/logger.middleware.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import noteRoutes from "./src/routes/note.routes.js";
 
@@ -11,6 +13,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use(httpLogger);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
@@ -26,10 +30,10 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      logger.info(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Server startup failed:", error.message);
+    logger.error(error, "Server startup failed");
     process.exit(1);
   }
 };
