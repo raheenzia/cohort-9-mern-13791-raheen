@@ -102,6 +102,7 @@ function Login() {
             <button 
               type="button"
               onClick={() => switchMode(false)}
+              aria-label="Switch to login tab"
               className={`w-1/2 py-3 rounded-2xl font-display font-semibold transition ${!isRegistering ? "bg-white text-pastel-text shadow-sm" : "text-pastel-muted"}`}
             >
               Log in
@@ -178,11 +179,11 @@ function Login() {
 
 
             <div className="mb-8">
-              <label className="block mb-3 text-sm font-semibold tracking-wide text-pastel-muted">
+              <label htmlFor="password" className="block mb-3 text-sm font-semibold tracking-wide text-pastel-muted">
                 PASSWORD
               </label>
 
-              <div htmlFor="password" className="flex items-center border border-pink-200 bg-pink-50 rounded-2xl overflow-hidden">
+              <div className="flex items-center border border-pink-200 bg-pink-50 rounded-2xl overflow-hidden">
                 <div className="px-5">
                   <Lock size={22} className="text-pastel-muted" />
                 </div>
