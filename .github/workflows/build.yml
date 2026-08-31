@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - develop
+      - feature/sonarqube-integration
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
