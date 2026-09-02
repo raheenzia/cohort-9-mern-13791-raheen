@@ -91,7 +91,7 @@ Make sure you have the following installed:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/raheenzia/cohort-9-mern-13791-raheen
+git clone https://github.com/raheenzia/cohort-9-mern-13791-raheen Petal Notes
 cd Petal-Notes
 ```
 
