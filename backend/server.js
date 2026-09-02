@@ -11,8 +11,9 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
-
+app.use(cors({
+    origin: "http://localhost:3000"
+}));
 app.use(express.json());
 
 app.use(httpLogger);
@@ -39,5 +40,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (process.env.NODE_ENV !== "test") {
+    startServer();
+}
+export default app;
 
