@@ -5,7 +5,7 @@ import logger from "../config/logger.js";
 
 export const registerUserService = async ({ name, email, password }) => {
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email:email.toString() });
     if (existingUser) {
         const error = new Error("User with this email already exists");
         error.statusCode = 400;
@@ -16,7 +16,7 @@ export const registerUserService = async ({ name, email, password }) => {
 
     const user = new User({
         name,
-        email,
+        email: email.toString(),
         password: hashedPassword,
     });
 
@@ -55,7 +55,7 @@ export const registerUserService = async ({ name, email, password }) => {
 };
 
 export const loginUserService = async (email, password) => {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: email.toString() }).select("+password");
 
     if (!user) {
         const error = new Error("Invalid email or password");
